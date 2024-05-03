@@ -48,7 +48,7 @@ public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<Arra
         dynamic min = data[0];
         foreach (T item in data)
         {
-            if (item < min)
+            if (Comparer<T>.Default.Compare(item, min) < 0)
                 min = item;
         }
         return min;
@@ -59,7 +59,7 @@ public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<Arra
         dynamic max = data[0];
         foreach (T item in data)
         {
-            if (item > max)
+            if (Comparer<T>.Default.Compare(item, max) > 0)
                 max = item;
         }
         return max;
