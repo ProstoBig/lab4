@@ -11,7 +11,17 @@ public interface IArrayOperations<T>
     string Description { get; }
 }
 
-public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<ArrayBase<T>>, ICloneable
+public interface IMyInterface
+{
+    void Method1();
+    void Method2();
+    void Method3();
+    void Method4();
+    void Method5();
+    string Property { get; set; }
+}
+
+public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<ArrayBase<T>>, ICloneable, IMyInterface
 {
     protected T[] data;
 
@@ -25,6 +35,23 @@ public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<Arra
             totalSize *= dimension;
         }
         data = new T[totalSize];
+    }
+
+    // Additional constructor
+    public ArrayBase(T[] dataArray)
+    {
+        data = dataArray;
+    }
+
+    // Method-Extension
+    public string ToArrayBaseString()
+    {
+        return $"ArrayBase of {typeof(T)} with length {Length}";
+    }
+
+    public static ArrayBase<T> CreateFromArray(T[] array)
+    {
+        return new ArrayBase<T>(array);
     }
 
     public T this[int index]
@@ -143,6 +170,14 @@ public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<Arra
     {
         return GetEnumerator();
     }
+
+    // Implementation of IMyInterface
+    public void Method1() { }
+    public void Method2() { }
+    public void Method3() { }
+    public void Method4() { }
+    public void Method5() { }
+    public string Property { get; set; }
 }
 
 public class MultiDimensionalArray<T> : ArrayBase<T>
@@ -216,5 +251,18 @@ class Program
         {
             Console.WriteLine($"Index: {string.Join(", ", index)}");
         }
+
+        // Testing additional features
+        Console.WriteLine("\nAdditional features testing:");
+        Console.WriteLine("ArrayBase string representation: " + multiArr.ToArrayBaseString());
+        ArrayBase<int> arrayFromList = ArrayBase<int>.CreateFromArray(new int[] { 1, 2, 3, 4, 5 });
+        Console.WriteLine("Array created from list: ");
+        Console.WriteLine(arrayFromList);
+
+        // Testing interface methods
+        Console.WriteLine("\nInterface methods testing:");
+        arrayFromList.Method1();
+        arrayFromList.Property = "Property value";
+        Console.WriteLine("Property value: " + arrayFromList.Property);
     }
 }
