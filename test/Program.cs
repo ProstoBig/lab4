@@ -1,227 +1,155 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 
-public interface IArrayOperations<T>
+namespace test
 {
-    T Sum();
-    T Min();
-    T Max();
-    void Resize(params int[] dimensions);
-    string Description { get; }
-}
-
-public interface IMyInterface
-{
-    void Method1();
-    void Method2();
-    void Method3();
-    void Method4();
-    void Method5();
-    string Property { get; set; }
-}
-
-public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<ArrayBase<T>>, ICloneable, IMyInterface
-{
-    protected T[] data;
-
-    public int Length => data.Length;
-
-    public ArrayBase(params int[] dimensions)
+    public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<ArrayBase<T>>, ICloneable
     {
-        int totalSize = 1;
-        foreach (int dimension in dimensions)
+        protected T[] data;
+
+        public int Length => data.Length;
+
+        public ArrayBase(params int[] dimensions)
         {
-            totalSize *= dimension;
-        }
-        data = new T[totalSize];
-    }
-
-    // Additional constructor
-    public ArrayBase(T[] dataArray)
-    {
-        data = dataArray;
-    }
-
-    // Method-Extension
-    public string ToArrayBaseString()
-    {
-        return $"ArrayBase of {typeof(T)} with length {Length}";
-    }
-
-    public static ArrayBase<T> CreateFromArray(T[] array)
-    {
-        return new ArrayBase<T>(array);
-    }
-
-    public T this[int index]
-    {
-        get => data[index];
-        set => data[index] = value;
-    }
-
-    public T Sum()
-    {
-        dynamic sum = default(T);
-        foreach (T item in data)
-        {
-            sum += item;
-        }
-        return sum;
-    }
-
-    public T Min()
-    {
-        dynamic min = data[0];
-        foreach (T item in data)
-        {
-            if (Comparer<T>.Default.Compare(item, min) < 0)
-                min = item;
-        }
-        return min;
-    }
-
-    public T Max()
-    {
-        dynamic max = data[0];
-        foreach (T item in data)
-        {
-            if (Comparer<T>.Default.Compare(item, max) > 0)
-                max = item;
-        }
-        return max;
-    }
-
-    public void Resize(params int[] dimensions)
-    {
-        int totalSize = 1;
-        foreach (int dimension in dimensions)
-        {
-            totalSize *= dimension;
-        }
-        Array.Resize(ref data, totalSize);
-    }
-
-    public string Description => $"Array of {typeof(T)} with length {Length}";
-
-    public bool Equals(ArrayBase<T> other)
-    {
-        if (other == null) return false;
-        if (data.Length != other.data.Length) return false;
-        for (int i = 0; i < data.Length; i++)
-        {
-            if (!data[i].Equals(other.data[i]))
-                return false;
-        }
-        return true;
-    }
-
-    public override bool Equals(object obj)
-    {
-        if (obj == null || GetType() != obj.GetType())
-            return false;
-
-        return Equals((ArrayBase<T>)obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return data.GetHashCode();
-    }
-
-    public static bool operator ==(ArrayBase<T> a, ArrayBase<T> b)
-    {
-        if (ReferenceEquals(a, b))
-            return true;
-        if (a is null || b is null)
-            return false;
-        return a.Equals(b);
-    }
-
-    public static bool operator !=(ArrayBase<T> a, ArrayBase<T> b)
-    {
-        return !(a == b);
-    }
-
-    public override string ToString()
-    {
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        sb.AppendLine($"Array of {typeof(T)}:");
-        foreach (var item in data)
-        {
-            sb.AppendLine(item.ToString());
-        }
-        return sb.ToString();
-    }
-
-    public object Clone()
-    {
-        ArrayBase<T> clone = new ArrayBase<T>();
-        Array.Copy(data, clone.data, data.Length);
-        return clone;
-    }
-
-    public IEnumerator<T> GetEnumerator()
-    {
-        return ((IEnumerable<T>)data).GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    // Implementation of IMyInterface
-    public void Method1() { }
-    public void Method2() { }
-    public void Method3() { }
-    public void Method4() { }
-    public void Method5() { }
-    public string Property { get; set; }
-}
-
-public class MultiDimensionalArray<T> : ArrayBase<T>
-{
-    private readonly int[] dimensions;
-
-    public MultiDimensionalArray(params int[] dimensions) : base(dimensions)
-    {
-        this.dimensions = dimensions;
-    }
-
-    public int[] Shape => dimensions;
-
-    public void CopyTo(MultiDimensionalArray<T> array)
-    {
-        if (!Shape.SequenceEqual(array.Shape))
-        {
-            throw new ArgumentException("Shapes of the arrays don't match");
-        }
-        Array.Copy(data, array.data, data.Length);
-    }
-
-    public int[][] IndicesOf(T value)
-    {
-        List<int[]> indicesList = new List<int[]>();
-        for (int i = 0; i < data.Length; i++)
-        {
-            if (EqualityComparer<T>.Default.Equals(data[i], value))
+            int totalSize = 1;
+            foreach (int dimension in dimensions)
             {
-                indicesList.Add(ConvertIndexToIndices(i));
+                totalSize *= dimension;
             }
+            data = new T[totalSize];
         }
-        return indicesList.ToArray();
-    }
 
-    private int[] ConvertIndexToIndices(int index)
-    {
-        int[] indices = new int[dimensions.Length];
-        int multiplier = 1;
-        for (int i = dimensions.Length - 1; i >= 0; i--)
+        public ArrayBase(T[] dataArray)
         {
-            indices[i] = (index / multiplier) % dimensions[i];
-            multiplier *= dimensions[i];
+            data = dataArray;
         }
-        return indices;
+
+        public string ToArrayBaseString()
+        {
+            return $"ArrayBase of {typeof(T)} with length {Length}";
+        }
+
+        public static ArrayBase<T> CreateFromArray(T[] array)
+        {
+            return new ArrayBase<T>(array);
+        }
+
+        public T this[int index]
+        {
+            get => data[index];
+            set => data[index] = value;
+        }
+
+        public T Sum()
+        {
+            dynamic sum = default(T);
+            foreach (T item in data)
+            {
+                sum += item;
+            }
+            return sum;
+        }
+
+        public T Min()
+        {
+            dynamic min = data[0];
+            foreach (T item in data)
+            {
+                if (Comparer<T>.Default.Compare(item, min) < 0)
+                    min = item;
+            }
+            return min;
+        }
+
+        public T Max()
+        {
+            dynamic max = data[0];
+            foreach (T item in data)
+            {
+                if (Comparer<T>.Default.Compare(item, max) > 0)
+                    max = item;
+            }
+            return max;
+        }
+
+        public void Resize(params int[] dimensions)
+        {
+            int totalSize = 1;
+            foreach (int dimension in dimensions)
+            {
+                totalSize *= dimension;
+            }
+            Array.Resize(ref data, totalSize);
+        }
+
+        public string Description => $"Array of {typeof(T)} with length {Length}";
+
+        public bool Equals(ArrayBase<T> other)
+        {
+            if (other == null) return false;
+            if (data.Length != other.data.Length) return false;
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (!data[i].Equals(other.data[i]))
+                    return false;
+            }
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            return Equals((ArrayBase<T>)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return data.GetHashCode();
+        }
+
+        public static bool operator ==(ArrayBase<T> a, ArrayBase<T> b)
+        {
+            if (ReferenceEquals(a, b))
+                return true;
+            if (a is null || b is null)
+                return false;
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(ArrayBase<T> a, ArrayBase<T> b)
+        {
+            return !(a == b);
+        }
+
+        public override string ToString()
+        {
+            System.Text.StringBuilder sb = new();
+            sb.AppendLine($"Array of {typeof(T)}:");
+            foreach (var item in data)
+            {
+                sb.AppendLine(item.ToString());
+            }
+            return sb.ToString();
+        }
+
+        public object Clone()
+        {
+            ArrayBase<T> clone = new(dataArray: (T[])data.Clone());
+            return clone;
+        }
+
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return ((IEnumerable<T>)data).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
     }
 }
