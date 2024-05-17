@@ -51,7 +51,7 @@ namespace test
 
         public override object Clone()
         {
-            MultiDimensionalArray<T> clone = new MultiDimensionalArray<T>(dimensions);
+            MultiDimensionalArray<T> clone = new(dimensions);
             Array.Copy(data, clone.data, data.Length);
             return clone;
         }
