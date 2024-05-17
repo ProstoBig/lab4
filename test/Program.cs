@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace test
 {
-    public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<ArrayBase<T>>, ICloneable
+    public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<ArrayBase<T>?>, ICloneable
     {
         protected T[] data;
 
@@ -84,7 +84,7 @@ namespace test
 
         public string Description => $"Array of {typeof(T)} with length {Length}";
 
-        public bool Equals(ArrayBase<T> other)
+        public bool Equals(ArrayBase<T>? other)
         {
             if (other == null) return false;
             if (data.Length != other.data.Length) return false;
@@ -96,12 +96,12 @@ namespace test
             return true;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
-            return Equals((ArrayBase<T>)obj);
+            return Equals((ArrayBase<T>?)obj);
         }
 
         public override int GetHashCode()
@@ -109,7 +109,7 @@ namespace test
             return data.GetHashCode();
         }
 
-        public static bool operator ==(ArrayBase<T> a, ArrayBase<T> b)
+        public static bool operator ==(ArrayBase<T>? a, ArrayBase<T>? b)
         {
             if (ReferenceEquals(a, b))
                 return true;
@@ -118,7 +118,7 @@ namespace test
             return a.Equals(b);
         }
 
-        public static bool operator !=(ArrayBase<T> a, ArrayBase<T> b)
+        public static bool operator !=(ArrayBase<T>? a, ArrayBase<T>? b)
         {
             return !(a == b);
         }
@@ -134,12 +134,11 @@ namespace test
             return sb.ToString();
         }
 
-        public object Clone()
+        public virtual object Clone()
         {
             ArrayBase<T> clone = new(dataArray: (T[])data.Clone());
             return clone;
         }
-
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -150,6 +149,12 @@ namespace test
         {
             return GetEnumerator();
         }
-
+    }
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            //zaglushka
+        }
     }
 }

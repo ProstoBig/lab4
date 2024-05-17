@@ -1,6 +1,7 @@
 using NUnit.Framework;
-using MultiDimensionalArrays;
 using System;
+using System.Linq;
+using test;
 
 namespace MultiDimensionalArrays.Tests
 {
@@ -70,7 +71,6 @@ namespace MultiDimensionalArrays.Tests
             _array.Resize(3, 4, 5);
 
             Assert.AreEqual(3 * 4 * 5, _array.Length);
-            Assert.AreEqual(originalLength, _array.Length);
         }
 
         [Test]
@@ -79,5 +79,86 @@ namespace MultiDimensionalArrays.Tests
             Assert.AreEqual($"Array of System.Int32 with length {_array.Length}", _array.Description);
         }
 
+        [Test]
+        public void TestClone()
+        {
+            var clonedArray = (MultiDimensionalArray<int>)_array.Clone();
+
+            Assert.AreEqual(_array.Length, clonedArray.Length);
+            for (int i = 0; i < _array.Length; i++)
+            {
+                Assert.AreEqual(_array[i], clonedArray[i]);
+            }
+        }
+
+        [Test]
+        public void TestEquals()
+        {
+            var anotherArray = new MultiDimensionalArray<int>(2, 3, 4);
+            for (int i = 0; i < anotherArray.Length; i++)
+            {
+                anotherArray[i] = _array[i];
+            }
+
+            Assert.IsTrue(_array.Equals(anotherArray));
+            Assert.IsTrue(_array == anotherArray);
+
+            anotherArray[0] = -1;
+            Assert.IsFalse(_array.Equals(anotherArray));
+            Assert.IsTrue(_array != anotherArray);
+        }
+
+        [Test]
+        public void TestToArrayBaseString()
+        {
+            var arrayBase = new ArrayBase<int>(2, 3);
+            Assert.AreEqual("ArrayBase of System.Int32 with length 6", arrayBase.ToArrayBaseString());
+        }
+
+        [Test]
+        public void TestCreateFromArray()
+        {
+            int[] initialArray = { 1, 2, 3, 4 };
+            var createdArray = ArrayBase<int>.CreateFromArray(initialArray);
+
+            Assert.AreEqual(initialArray.Length, createdArray.Length);
+            for (int i = 0; i < initialArray.Length; i++)
+            {
+                Assert.AreEqual(initialArray[i], createdArray[i]);
+            }
+        }
+
+        [Test]
+        public void TestCopyTo()
+        {
+            var targetArray = new MultiDimensionalArray<int>(2, 3, 4);
+            _array.CopyTo(targetArray);
+
+            Assert.AreEqual(_array.Length, targetArray.Length);
+            for (int i = 0; i < _array.Length; i++)
+            {
+                Assert.AreEqual(_array[i], targetArray[i]);
+            }
+        }
+
+        [Test]
+        public void TestIndicesOf()
+        {
+            _array[0] = 42;
+            _array[1] = 42;
+
+            var indices = _array.IndicesOf(42);
+
+            Assert.AreEqual(2, indices.Length);
+            Assert.IsTrue(indices.Any(indexArray => indexArray.SequenceEqual(new int[] { 0, 0, 0 })));
+            Assert.IsTrue(indices.Any(indexArray => indexArray.SequenceEqual(new int[] { 0, 0, 1 })));
+        }
+
+        [Test]
+        public void TestIndexer()
+        {
+            _array[0] = 99;
+            Assert.AreEqual(99, _array[0]);
+        }
     }
 }

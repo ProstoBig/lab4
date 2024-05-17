@@ -1,47 +1,59 @@
-﻿using test;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-public class MultiDimensionalArray<T> : ArrayBase<T>
+namespace test
 {
-    private readonly int[] dimensions;
-
-    public MultiDimensionalArray(params int[] dimensions) : base(dimensions)
+    public class MultiDimensionalArray<T> : ArrayBase<T>
     {
-        this.dimensions = dimensions;
-    }
+        private readonly int[] dimensions;
 
-    public int[] Shape => dimensions;
-
-    public void CopyTo(MultiDimensionalArray<T> array)
-    {
-        if (!Shape.SequenceEqual(array.Shape))
+        public MultiDimensionalArray(params int[] dimensions) : base(dimensions)
         {
-            throw new ArgumentException("Shapes of the arrays don't match");
+            this.dimensions = dimensions;
         }
-        Array.Copy(data, array.data, data.Length);
-    }
 
-    public int[][] IndicesOf(T value)
-    {
-        List<int[]> indicesList = new();
-        for (int i = 0; i < data.Length; i++)
+        public int[] Shape => dimensions;
+
+        public void CopyTo(MultiDimensionalArray<T> array)
         {
-            if (EqualityComparer<T>.Default.Equals(data[i], value))
+            if (!Shape.SequenceEqual(array.Shape))
             {
-                indicesList.Add(ConvertIndexToIndices(i));
+                throw new ArgumentException("Shapes of the arrays don't match");
             }
+            Array.Copy(data, array.data, data.Length);
         }
-        return indicesList.ToArray();
-    }
 
-    private int[] ConvertIndexToIndices(int index)
-    {
-        int[] indices = new int[dimensions.Length];
-        int multiplier = 1;
-        for (int i = dimensions.Length - 1; i >= 0; i--)
+        public int[][] IndicesOf(T value)
         {
-            indices[i] = (index / multiplier) % dimensions[i];
-            multiplier *= dimensions[i];
+            List<int[]> indicesList = new();
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (EqualityComparer<T>.Default.Equals(data[i], value))
+                {
+                    indicesList.Add(ConvertIndexToIndices(i));
+                }
+            }
+            return indicesList.ToArray();
         }
-        return indices;
+
+        private int[] ConvertIndexToIndices(int index)
+        {
+            int[] indices = new int[dimensions.Length];
+            int multiplier = 1;
+            for (int i = dimensions.Length - 1; i >= 0; i--)
+            {
+                indices[i] = (index / multiplier) % dimensions[i];
+                multiplier *= dimensions[i];
+            }
+            return indices;
+        }
+
+        public override object Clone()
+        {
+            MultiDimensionalArray<T> clone = new MultiDimensionalArray<T>(dimensions);
+            Array.Copy(data, clone.data, data.Length);
+            return clone;
+        }
     }
 }
