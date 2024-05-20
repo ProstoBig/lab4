@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using System;
-using System.Linq;
 using test;
 
 namespace MultiDimensionalArrays.Tests
@@ -13,7 +12,7 @@ namespace MultiDimensionalArrays.Tests
         public void Setup()
         {
             _array = new MultiDimensionalArray<int>(2, 3, 4);
-            Random rand = new Random();
+            Random rand = new();
             for (int i = 0; i < _array.Length; i++)
             {
                 _array[i] = rand.Next(100);
@@ -159,6 +158,19 @@ namespace MultiDimensionalArrays.Tests
         {
             _array[0] = 99;
             Assert.AreEqual(99, _array[0]);
+        }
+
+        [Test]
+        public void TestSerialization()
+        {
+            var serializedData = _array.Serialize();
+            var deserializedArray = MultiDimensionalArray<int>.Deserialize(serializedData);
+
+            Assert.AreEqual(_array.Length, deserializedArray.Length);
+            for (int i = 0; i < _array.Length; i++)
+            {
+                Assert.AreEqual(_array[i], deserializedArray[i]);
+            }
         }
     }
 }

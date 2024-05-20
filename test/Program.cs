@@ -1,14 +1,22 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace test
 {
-    public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<ArrayBase<T>?>, ICloneable
+    [Serializable]
+    public class ArrayBase<T> : IArrayOperations<T>, IEnumerable<T>, IEquatable<ArrayBase<T>>, ICloneable
     {
         protected T[] data;
-
+        /// <summary>
+        /// Отримує довжину масиву.
+        /// </summary>
         public int Length => data.Length;
-
+        /// <summary>
+        /// Ініціалізує новий екземпляр класуз вказаними розмірами.
+        /// </summary>
         public ArrayBase(params int[] dimensions)
         {
             int totalSize = 1;
@@ -18,27 +26,36 @@ namespace test
             }
             data = new T[totalSize];
         }
-
+        /// <summary>
+        /// Ініціалізує новий екземпляр класу з вказаними даними.
+        /// </summary>
         public ArrayBase(T[] dataArray)
         {
             data = dataArray;
         }
-
+        /// <summary>
+        /// Повертає рядок, що представляє поточний об'єкт.
+        /// </summary>
         public string ToArrayBaseString()
         {
             return $"ArrayBase of {typeof(T)} with length {Length}";
         }
-
+        /// <summary>
+        /// Створює новий екземпляр класу на основі звичайного масиву.
+        /// </summary>
         public static ArrayBase<T> CreateFromArray(T[] array)
         {
             return new ArrayBase<T>(array);
         }
-
+        /// <summary>
+        /// Отримує або задає значення за індексом.
+        /// </summary>
         public T this[int index]
         {
             get => data[index];
             set => data[index] = value;
         }
+
 
         public T Sum()
         {
@@ -84,7 +101,7 @@ namespace test
 
         public string Description => $"Array of {typeof(T)} with length {Length}";
 
-        public bool Equals(ArrayBase<T>? other)
+        public bool Equals(ArrayBase<T> other)
         {
             if (other == null) return false;
             if (data.Length != other.data.Length) return false;
@@ -96,12 +113,12 @@ namespace test
             return true;
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
-            return Equals((ArrayBase<T>?)obj);
+            return Equals((ArrayBase<T>)obj);
         }
 
         public override int GetHashCode()
@@ -109,7 +126,7 @@ namespace test
             return data.GetHashCode();
         }
 
-        public static bool operator ==(ArrayBase<T>? a, ArrayBase<T>? b)
+        public static bool operator ==(ArrayBase<T> a, ArrayBase<T> b)
         {
             if (ReferenceEquals(a, b))
                 return true;
@@ -118,7 +135,7 @@ namespace test
             return a.Equals(b);
         }
 
-        public static bool operator !=(ArrayBase<T>? a, ArrayBase<T>? b)
+        public static bool operator !=(ArrayBase<T> a, ArrayBase<T> b)
         {
             return !(a == b);
         }
@@ -148,6 +165,25 @@ namespace test
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+        /// <summary>
+        /// Сереалізація.
+        /// </summary>
+        public byte[] Serialize()
+        {
+            using MemoryStream ms = new();
+            BinaryFormatter formatter = new();
+            formatter.Serialize(ms, this);
+            return ms.ToArray();
+        }
+        /// <summary>
+        /// Десереалізація.
+        /// </summary>
+        public static ArrayBase<T> Deserialize(byte[] data)
+        {
+            using MemoryStream ms = new(data);
+            BinaryFormatter formatter = new();
+            return (ArrayBase<T>)formatter.Deserialize(ms);
         }
     }
     public class Program
